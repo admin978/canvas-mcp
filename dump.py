@@ -1,21 +1,25 @@
 #!/usr/bin/env python3
 """Bulk-download Canvas content: files, modules, assignments, pages, announcements."""
 from __future__ import annotations
-import json, os, re, sys, time
+import json, os, re, sys
 from pathlib import Path
-from urllib.parse import urlparse
 import urllib.request, urllib.error
 
 ENV = Path.home() / ".canvas.env"
-for line in ENV.read_text().splitlines():
-    if "=" in line and not line.startswith("#"):
-        k, v = line.split("=", 1)
-        os.environ.setdefault(k.strip(), v.strip())
+if ENV.exists():
+    for line in ENV.read_text().splitlines():
+        if "=" in line and not line.startswith("#"):
+            k, v = line.split("=", 1)
+            os.environ.setdefault(k.strip(), v.strip())
 
-BASE = os.environ["CANVAS_BASE_URL"].rstrip("/")
-TOKEN = os.environ["CANVAS_TOKEN"]
-OUT = Path(__file__).resolve().parent.parent / "canvas-dump"
-OUT.mkdir(exist_ok=True)
+try:
+    BASE = os.environ["CANVAS_BASE_URL"].rstrip("/")
+    TOKEN = os.environ["CANVAS_TOKEN"]
+except KeyError as e:
+    raise SystemExit(f"canvas-mcp: missing {e.args[0]}. Create ~/.canvas.env from .canvas.env.example (see README).")
+
+OUT = Path(os.environ.get("CANVAS_DUMP_DIR", "canvas-dump")).resolve()
+OUT.mkdir(parents=True, exist_ok=True)
 
 HEAD = {"Authorization": f"Bearer {TOKEN}"}
 SAFE = re.compile(r"[^\w\-. áéíóúñÁÉÍÓÚÑ()]+")

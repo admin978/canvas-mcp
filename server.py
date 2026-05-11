@@ -8,13 +8,17 @@ import httpx
 from mcp.server.fastmcp import FastMCP
 
 ENV = Path.home() / ".canvas.env"
-for line in ENV.read_text().splitlines():
-    if "=" in line and not line.startswith("#"):
-        k, v = line.split("=", 1)
-        os.environ.setdefault(k.strip(), v.strip())
+if ENV.exists():
+    for line in ENV.read_text().splitlines():
+        if "=" in line and not line.startswith("#"):
+            k, v = line.split("=", 1)
+            os.environ.setdefault(k.strip(), v.strip())
 
-BASE = os.environ["CANVAS_BASE_URL"].rstrip("/")
-TOKEN = os.environ["CANVAS_TOKEN"]
+try:
+    BASE = os.environ["CANVAS_BASE_URL"].rstrip("/")
+    TOKEN = os.environ["CANVAS_TOKEN"]
+except KeyError as e:
+    raise SystemExit(f"canvas-mcp: missing {e.args[0]}. Create ~/.canvas.env from .canvas.env.example (see README).")
 HEAD = {"Authorization": f"Bearer {TOKEN}"}
 
 mcp = FastMCP("canvas-local")
@@ -72,8 +76,8 @@ def list_assignments(course_id: int, include_submissions: bool = False) -> list[
     return out
 
 @mcp.tool()
-def upcoming_events(days: int = 14) -> list[dict]:
-    """Upcoming planner items (assignments, calendar events) across all courses."""
+def upcoming_events() -> list[dict]:
+    """Upcoming planner items (assignments, calendar events) across all courses. Canvas returns roughly the next two weeks."""
     return _get("/api/v1/users/self/upcoming_events")
 
 @mcp.tool()
@@ -108,7 +112,7 @@ def get_grades(course_id: int | None = None) -> list[dict]:
     if course_id:
         en = _get(f"/api/v1/courses/{course_id}/enrollments", user_id="self")
     else:
-        en = _get("/api/v1/users/self/enrollments", state=["active"])
+        en = _get("/api/v1/users/self/enrollments", **{"state[]": "active"})
     return [{"course_id": e.get("course_id"), "grade": e.get("grades"), "type": e.get("type")} for e in en]
 
 @mcp.tool()
