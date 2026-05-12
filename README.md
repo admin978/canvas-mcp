@@ -1,5 +1,7 @@
 # canvas-mcp
 
+<!-- mcp-name: io.github.admin978/canvas-mcp -->
+
 Local-first MCP server for Canvas LMS. Stdio transport, no network round-trips beyond the official Canvas API.
 
 > **Status:** alpha. Single-user, no warranty, API surface may still shift. File issues if it breaks.
