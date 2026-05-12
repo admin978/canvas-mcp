@@ -7,21 +7,25 @@ from typing import Any
 import httpx
 from mcp.server.fastmcp import FastMCP
 
-ENV = Path.home() / ".canvas.env"
-if ENV.exists():
-    for line in ENV.read_text().splitlines():
-        if "=" in line and not line.startswith("#"):
-            k, v = line.split("=", 1)
-            os.environ.setdefault(k.strip(), v.strip())
-
-try:
-    BASE = os.environ["CANVAS_BASE_URL"].rstrip("/")
-    TOKEN = os.environ["CANVAS_TOKEN"]
-except KeyError as e:
-    raise SystemExit(f"canvas-mcp: missing {e.args[0]}. Create ~/.canvas.env from .canvas.env.example (see README).")
-HEAD = {"Authorization": f"Bearer {TOKEN}"}
+ENV_FILE = Path.home() / ".canvas.env"
+BASE = ""
+HEAD: dict[str, str] = {}
 
 mcp = FastMCP("canvas-local")
+
+def _load_env() -> None:
+    global BASE, HEAD
+    if ENV_FILE.exists():
+        for line in ENV_FILE.read_text().splitlines():
+            if "=" in line and not line.startswith("#"):
+                k, v = line.split("=", 1)
+                os.environ.setdefault(k.strip(), v.strip())
+    try:
+        BASE = os.environ["CANVAS_BASE_URL"].rstrip("/")
+        token = os.environ["CANVAS_TOKEN"]
+    except KeyError as e:
+        raise SystemExit(f"canvas-mcp: missing {e.args[0]}. Create ~/.canvas.env from .canvas.env.example (see README).")
+    HEAD = {"Authorization": f"Bearer {token}"}
 
 def _get(path: str, **params) -> Any:
     params.setdefault("per_page", 100)
@@ -125,5 +129,9 @@ def todo() -> list[dict]:
     """User's TODO list (ungraded assignments to look at)."""
     return _get("/api/v1/users/self/todo")
 
-if __name__ == "__main__":
+def main() -> None:
+    _load_env()
     mcp.run()
+
+if __name__ == "__main__":
+    main()

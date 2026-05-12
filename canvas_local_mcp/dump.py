@@ -5,24 +5,27 @@ import json, os, re, sys
 from pathlib import Path
 import urllib.request, urllib.error
 
-ENV = Path.home() / ".canvas.env"
-if ENV.exists():
-    for line in ENV.read_text().splitlines():
-        if "=" in line and not line.startswith("#"):
-            k, v = line.split("=", 1)
-            os.environ.setdefault(k.strip(), v.strip())
-
-try:
-    BASE = os.environ["CANVAS_BASE_URL"].rstrip("/")
-    TOKEN = os.environ["CANVAS_TOKEN"]
-except KeyError as e:
-    raise SystemExit(f"canvas-mcp: missing {e.args[0]}. Create ~/.canvas.env from .canvas.env.example (see README).")
-
-OUT = Path(os.environ.get("CANVAS_DUMP_DIR", "canvas-dump")).resolve()
-OUT.mkdir(parents=True, exist_ok=True)
-
-HEAD = {"Authorization": f"Bearer {TOKEN}"}
+ENV_FILE = Path.home() / ".canvas.env"
+BASE = ""
+HEAD: dict[str, str] = {}
+OUT = Path()
 SAFE = re.compile(r"[^\w\-. áéíóúñÁÉÍÓÚÑ()]+")
+
+def _load_env() -> None:
+    global BASE, HEAD, OUT
+    if ENV_FILE.exists():
+        for line in ENV_FILE.read_text().splitlines():
+            if "=" in line and not line.startswith("#"):
+                k, v = line.split("=", 1)
+                os.environ.setdefault(k.strip(), v.strip())
+    try:
+        BASE = os.environ["CANVAS_BASE_URL"].rstrip("/")
+        token = os.environ["CANVAS_TOKEN"]
+    except KeyError as e:
+        raise SystemExit(f"canvas-mcp: missing {e.args[0]}. Create ~/.canvas.env from .canvas.env.example (see README).")
+    HEAD = {"Authorization": f"Bearer {token}"}
+    OUT = Path(os.environ.get("CANVAS_DUMP_DIR", "canvas-dump")).resolve()
+    OUT.mkdir(parents=True, exist_ok=True)
 
 def slug(s: str, n: int = 120) -> str:
     return SAFE.sub("_", (s or "untitled")).strip("._ ")[:n] or "untitled"
@@ -137,6 +140,7 @@ def dump_course(c: dict):
         print(f"  announcements: {e}")
 
 def main():
+    _load_env()
     only = set(sys.argv[1:])
     courses = list(paged(f"{BASE}/api/v1/courses?enrollment_state=active"))
     for c in courses:

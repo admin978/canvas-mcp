@@ -30,10 +30,21 @@ In Canvas: **Account → Settings → Approved Integrations → + New Access Tok
 
 ### 2. Install
 
+From PyPI (recommended):
 ```bash
+pip install canvas-local-mcp
+```
+
+Or from source:
+```bash
+git clone https://github.com/admin978/canvas-mcp.git && cd canvas-mcp
 python3 -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
-cp .canvas.env.example ~/.canvas.env
+pip install -e .
+```
+
+Then create the env file:
+```bash
+curl -fsSL https://raw.githubusercontent.com/admin978/canvas-mcp/main/.canvas.env.example -o ~/.canvas.env
 chmod 600 ~/.canvas.env
 # edit ~/.canvas.env: set CANVAS_BASE_URL (institution root, no /api/v1)
 # and paste the token into CANVAS_TOKEN
@@ -43,7 +54,7 @@ chmod 600 ~/.canvas.env
 
 Claude Code:
 ```bash
-claude mcp add canvas-local -- python3 /path/to/server.py
+claude mcp add canvas-local -- canvas-local-mcp
 ```
 
 Claude Desktop (`~/Library/Application Support/Claude/claude_desktop_config.json`):
@@ -51,8 +62,7 @@ Claude Desktop (`~/Library/Application Support/Claude/claude_desktop_config.json
 {
   "mcpServers": {
     "canvas-local": {
-      "command": "python3",
-      "args": ["/path/to/server.py"]
+      "command": "canvas-local-mcp"
     }
   }
 }
@@ -60,11 +70,11 @@ Claude Desktop (`~/Library/Application Support/Claude/claude_desktop_config.json
 
 ## Bulk dump
 
-`dump.py` downloads every file the user has access to (course materials, syllabi). Useful for offline indexing.
+`canvas-local-mcp-dump` downloads every file the user has access to (course materials, syllabi). Useful for offline indexing.
 
 ```bash
-python3 dump.py              # all active courses
-python3 dump.py 12345 67890  # specific course IDs
+canvas-local-mcp-dump              # all active courses
+canvas-local-mcp-dump 12345 67890  # specific course IDs
 ```
 
 Output goes to `./canvas-dump/` by default. Override with `CANVAS_DUMP_DIR=/path/to/dir`.
