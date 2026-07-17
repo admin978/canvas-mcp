@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 """Local Canvas MCP server. Reads token from ~/.canvas.env. Stdio transport."""
 from __future__ import annotations
+
 import os
 from pathlib import Path
 from typing import Any
+
 import httpx
 from mcp.server.fastmcp import FastMCP
 
@@ -24,7 +26,9 @@ def _load_env() -> None:
         BASE = os.environ["CANVAS_BASE_URL"].rstrip("/")
         token = os.environ["CANVAS_TOKEN"]
     except KeyError as e:
-        raise SystemExit(f"canvas-mcp: missing {e.args[0]}. Create ~/.canvas.env from .canvas.env.example (see README).")
+        raise SystemExit(
+            f"canvas-mcp: missing {e.args[0]}. Create ~/.canvas.env from .canvas.env.example (see README)."
+        ) from None
     HEAD = {"Authorization": f"Bearer {token}"}
 
 def _get(path: str, **params) -> Any:
@@ -41,7 +45,9 @@ def _get(path: str, **params) -> Any:
             else:
                 return data
             url = None
-            params = {}
+            # rel="next" URLs already carry the query string; passing params={} here
+            # would strip it (httpx replaces the query), re-fetching page 1 forever.
+            params = None
             link = r.headers.get("Link", "")
             for part in link.split(","):
                 if 'rel="next"' in part:
@@ -50,7 +56,7 @@ def _get(path: str, **params) -> Any:
 
 @mcp.tool()
 def list_courses(active_only: bool = True) -> list[dict]:
-    """List enrolled courses. Returns id, name, course_code, term."""
+    """List enrolled courses. Returns id, name, course_code."""
     p = "/api/v1/courses"
     params = {"enrollment_state": "active"} if active_only else {}
     cs = _get(p, **params)
@@ -75,21 +81,30 @@ def list_assignments(course_id: int, include_submissions: bool = False) -> list[
         }
         if include_submissions and a.get("submission"):
             s = a["submission"]
-            item["submission"] = {"score": s.get("score"), "submitted_at": s.get("submitted_at"), "workflow_state": s.get("workflow_state")}
+            item["submission"] = {
+                "score": s.get("score"),
+                "submitted_at": s.get("submitted_at"),
+                "workflow_state": s.get("workflow_state"),
+            }
         out.append(item)
     return out
 
 @mcp.tool()
 def upcoming_events() -> list[dict]:
-    """Upcoming planner items (assignments, calendar events) across all courses. Canvas returns roughly the next two weeks."""
+    """Upcoming planner items (assignments, calendar events) across all courses.
+
+    Canvas returns roughly the next two weeks.
+    """
     return _get("/api/v1/users/self/upcoming_events")
 
 @mcp.tool()
 def planner_items(start_date: str | None = None, end_date: str | None = None) -> list[dict]:
     """Planner items for the user. ISO dates (YYYY-MM-DD)."""
     p = {}
-    if start_date: p["start_date"] = start_date
-    if end_date: p["end_date"] = end_date
+    if start_date:
+        p["start_date"] = start_date
+    if end_date:
+        p["end_date"] = end_date
     return _get("/api/v1/planner/items", **p)
 
 @mcp.tool()
