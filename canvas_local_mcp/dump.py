@@ -1,9 +1,14 @@
 #!/usr/bin/env python3
 """Bulk-download Canvas content: files, modules, assignments, pages, announcements."""
 from __future__ import annotations
-import json, os, re, sys
+
+import json
+import os
+import re
+import sys
+import urllib.error
+import urllib.request
 from pathlib import Path
-import urllib.request, urllib.error
 
 ENV_FILE = Path.home() / ".canvas.env"
 BASE = ""
@@ -22,7 +27,9 @@ def _load_env() -> None:
         BASE = os.environ["CANVAS_BASE_URL"].rstrip("/")
         token = os.environ["CANVAS_TOKEN"]
     except KeyError as e:
-        raise SystemExit(f"canvas-mcp: missing {e.args[0]}. Create ~/.canvas.env from .canvas.env.example (see README).")
+        raise SystemExit(
+            f"canvas-mcp: missing {e.args[0]}. Create ~/.canvas.env from .canvas.env.example (see README)."
+        ) from None
     HEAD = {"Authorization": f"Bearer {token}"}
     OUT = Path(os.environ.get("CANVAS_DUMP_DIR", "canvas-dump")).resolve()
     OUT.mkdir(parents=True, exist_ok=True)

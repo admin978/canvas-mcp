@@ -2,6 +2,8 @@
 
 <!-- mcp-name: io.github.admin978/canvas-mcp -->
 
+[![CI](https://github.com/admin978/canvas-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/admin978/canvas-mcp/actions/workflows/ci.yml)
+
 Local-first MCP server for Canvas LMS. Stdio transport, no network round-trips beyond the official Canvas API.
 
 > **Status:** alpha. Single-user, no warranty, API surface may still shift. File issues if it breaks.
@@ -80,6 +82,16 @@ canvas-local-mcp-dump 12345 67890  # specific course IDs
 ```
 
 Output goes to `./canvas-dump/` by default. Override with `CANVAS_DUMP_DIR=/path/to/dir`.
+
+## Development
+
+```bash
+pip install -e ".[dev]"
+ruff check canvas_local_mcp tests   # lint
+pytest                              # tests run against a mocked Canvas API — no token needed
+```
+
+CI runs lint + tests on Python 3.10–3.13 for every push and pull request.
 
 ## License
 

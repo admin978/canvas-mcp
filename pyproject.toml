@@ -29,6 +29,12 @@ dependencies = [
     "mcp>=1.0,<2.0",
 ]
 
+[project.optional-dependencies]
+dev = [
+    "pytest>=8",
+    "ruff>=0.4",
+]
+
 [project.urls]
 Homepage = "https://github.com/admin978/canvas-mcp"
 Repository = "https://github.com/admin978/canvas-mcp"
@@ -40,3 +46,13 @@ canvas-local-mcp-dump = "canvas_local_mcp.dump:main"
 
 [tool.setuptools.packages.find]
 include = ["canvas_local_mcp*"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
