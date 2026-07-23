@@ -73,7 +73,7 @@ claude mcp add canvas-local -- canvas-local-mcp
 Claude Desktop:
 
 - macOS example path: `~/Library/Application Support/Claude/claude_desktop_config.json`
-- Windows example path: `%APPDATA%\\Claude\\claude_desktop_config.json`
+- Windows example path: `%APPDATA%\Claude\claude_desktop_config.json`
 - Linux example path: `~/.config/Claude/claude_desktop_config.json`
 
 ```json
