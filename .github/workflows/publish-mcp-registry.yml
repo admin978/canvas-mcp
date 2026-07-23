@@ -29,10 +29,13 @@ jobs:
           output=$(./mcp-publisher publish 2>&1)
           exit_code=$?
           echo "$output"
-          if [ $exit_code -ne 0 ]; then
-            if echo "$output" | grep -iq "duplicate version"; then
+          if [ "$exit_code" -ne 0 ]; then
+            # mcp-publisher exits 1 for all errors; distinguish duplicate-version
+            # failures (idempotent re-runs) from real failures by inspecting the
+            # error message returned by the registry API.
+            if echo "$output" | grep -iq "cannot publish duplicate version"; then
               echo "::warning::Version already published - skipping."
             else
-              exit $exit_code
+              exit "$exit_code"
             fi
           fi
