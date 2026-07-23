@@ -175,8 +175,8 @@ Trigger the PyPI publish workflow (or run `python -m build && twine upload dist/
 ### 4. Create and push the tag `vX.Y.Z`
 
 ```bash
-git tag vX.Y.Z
-git push origin vX.Y.Z
+git tag v0.1.4
+git push origin v0.1.4
 ```
 
 This triggers the `Publish to MCP Registry` workflow, which:

@@ -44,7 +44,7 @@ jobs:
           INIT_VERSION=$(python3 -c "
           import re, sys
           content = open('canvas_local_mcp/__init__.py').read()
-          m = re.search(r'^__version__\s*=\s*[\"'\'']([^\"'\'']+)[\"'\'']', content, re.MULTILINE)
+          m = re.search(r'^__version__\s*=\s*\"([^\"]+)\"', content, re.MULTILINE)
           if not m:
               print('ERROR: __version__ not found in canvas_local_mcp/__init__.py', file=sys.stderr)
               sys.exit(1)
