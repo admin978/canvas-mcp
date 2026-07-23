@@ -34,7 +34,7 @@ Prerequisite: **Python 3.10+**.
 
 ### 1) Create a Canvas personal access token
 
-In Canvas: **Account, then Settings, then Approved Integrations, then + New Access Token**.
+In Canvas: **Account → Settings → Approved Integrations → + New Access Token**.
 Copy the token shown (Canvas does not show it again later).
 
 ### 2) Install
