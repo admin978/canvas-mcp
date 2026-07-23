@@ -30,6 +30,8 @@ Ask Claude about your Canvas courses, assignments, deadlines, modules and grades
 
 ## Quick start
 
+Prerequisite: **Python 3.10+**.
+
 ### 1) Create a Canvas personal access token
 
 In Canvas: **Account > Settings > Approved Integrations > + New Access Token**.
@@ -68,7 +70,10 @@ Claude Code:
 claude mcp add canvas-local -- canvas-local-mcp
 ```
 
-Claude Desktop (macOS example path: `~/Library/Application Support/Claude/claude_desktop_config.json`; on Windows/Linux use your platform-specific Claude Desktop config path):
+Claude Desktop:
+
+- macOS example path: `~/Library/Application Support/Claude/claude_desktop_config.json`
+- On Windows/Linux, use your platform-specific Claude Desktop config path
 
 ```json
 {
