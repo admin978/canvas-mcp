@@ -34,7 +34,7 @@ Prerequisite: **Python 3.10+**.
 
 ### 1) Create a Canvas personal access token
 
-In Canvas: **Account > Settings > Approved Integrations > + New Access Token**.
+In Canvas: **Account, then Settings, then Approved Integrations, then + New Access Token**.
 Copy the token shown (Canvas does not show it again later).
 
 ### 2) Install
@@ -73,7 +73,8 @@ claude mcp add canvas-local -- canvas-local-mcp
 Claude Desktop:
 
 - macOS example path: `~/Library/Application Support/Claude/claude_desktop_config.json`
-- On Windows/Linux, use your platform-specific Claude Desktop config path
+- Windows example path: `%APPDATA%\\Claude\\claude_desktop_config.json`
+- Linux example path: `~/.config/Claude/claude_desktop_config.json`
 
 ```json
 {
