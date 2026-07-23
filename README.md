@@ -130,7 +130,7 @@ CI runs lint + tests on Python 3.10–3.13 for every push and pull request.
 
 ## Contributing, roadmap and support
 
-- Issues / feature requests: <https://github.com/admin978/canvas-mcp/issues>
+- [Issues / feature requests](https://github.com/admin978/canvas-mcp/issues)
 - Pull requests are welcome for bug fixes and Canvas workflow improvements
 - Roadmap direction currently lives in open issues and upcoming PRs
 
