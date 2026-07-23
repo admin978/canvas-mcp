@@ -7,7 +7,7 @@
 [![Python](https://img.shields.io/pypi/pyversions/canvas-local-mcp)](https://pypi.org/project/canvas-local-mcp/)
 [![License](https://img.shields.io/github/license/admin978/canvas-mcp)](https://github.com/admin978/canvas-mcp/blob/main/LICENSE)
 
-Ask Claude about your Canvas courses, assignments, deadlines, modules and grades from one place.
+Ask Claude about your Canvas courses, assignments, deadlines, modules, and grades from one place.
 
 `canvas-mcp` is a local-first MCP server for Canvas LMS users (students, instructors, and MCP builders). It turns Canvas REST API actions into MCP tools that work from Claude Code, Claude Desktop, and other MCP-compatible clients.
 
@@ -16,13 +16,13 @@ Ask Claude about your Canvas courses, assignments, deadlines, modules and grades
 ## Who this is for
 
 - **Students** who want one view across multiple courses
-- **Educators** who want faster access to assignments, modules and announcements
+- **Educators** who want faster access to assignments, modules, and announcements
 - **MCP users** who want Canvas data in local Claude workflows
 
 ## What you can ask Claude
 
 - “What assignments are due this week across all my active courses?”
-- “Show upcoming events and planner items for the next 7 days.”
+- “Show upcoming events and planner items for next week.”
 - “List my current grades by course.”
 - “Get the modules (with items) for course `12345`.”
 - “Show announcements for course `12345`.”
