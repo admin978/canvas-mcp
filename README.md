@@ -32,7 +32,7 @@ Ask Claude about your Canvas courses, assignments, deadlines, modules and grades
 
 ### 1) Create a Canvas personal access token
 
-In Canvas: **Account → Settings → Approved Integrations → + New Access Token**.
+In Canvas: **Account > Settings > Approved Integrations > + New Access Token**.
 Copy the token shown (Canvas does not show it again later).
 
 ### 2) Install
@@ -68,7 +68,7 @@ Claude Code:
 claude mcp add canvas-local -- canvas-local-mcp
 ```
 
-Claude Desktop (`~/Library/Application Support/Claude/claude_desktop_config.json`):
+Claude Desktop (macOS example path: `~/Library/Application Support/Claude/claude_desktop_config.json`):
 
 ```json
 {
