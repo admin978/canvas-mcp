@@ -15,6 +15,77 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Validate version consistency
+        run: |
+          # Extract versions from pyproject.toml and server.json
+          PYPROJECT_VERSION=$(python3 -c "
+          import re, sys
+          content = open('pyproject.toml').read()
+          m = re.search(r'^\s*version\s*=\s*\"([^\"]+)\"', content, re.MULTILINE)
+          if not m:
+              print('ERROR: version not found in pyproject.toml', file=sys.stderr)
+              sys.exit(1)
+          print(m.group(1))
+          ")
+          SERVER_VERSION=$(python3 -c "
+          import json, sys
+          data = json.load(open('server.json'))
+          print(data['version'])
+          ")
+          SERVER_PKG_VERSION=$(python3 -c "
+          import json, sys
+          data = json.load(open('server.json'))
+          pkgs = data.get('packages', [])
+          if not pkgs:
+              print('ERROR: no packages in server.json', file=sys.stderr)
+              sys.exit(1)
+          print(pkgs[0]['version'])
+          ")
+          INIT_VERSION=$(python3 -c "
+          import re, sys
+          content = open('canvas_local_mcp/__init__.py').read()
+          m = re.search(r'^__version__\s*=\s*\"([^\"]+)\"', content, re.MULTILINE)
+          if not m:
+              print('ERROR: __version__ not found in canvas_local_mcp/__init__.py', file=sys.stderr)
+              sys.exit(1)
+          print(m.group(1))
+          ")
+
+          echo "pyproject.toml version       : $PYPROJECT_VERSION"
+          echo "server.json version          : $SERVER_VERSION"
+          echo "server.json pkg version      : $SERVER_PKG_VERSION"
+          echo "canvas_local_mcp/__init__.py : $INIT_VERSION"
+
+          FAIL=0
+          if [ "$PYPROJECT_VERSION" != "$SERVER_VERSION" ]; then
+            echo "::error::Version mismatch: pyproject.toml=$PYPROJECT_VERSION vs server.json version=$SERVER_VERSION"
+            FAIL=1
+          fi
+          if [ "$PYPROJECT_VERSION" != "$SERVER_PKG_VERSION" ]; then
+            echo "::error::Version mismatch: pyproject.toml=$PYPROJECT_VERSION vs server.json packages[0].version=$SERVER_PKG_VERSION"
+            FAIL=1
+          fi
+          if [ "$PYPROJECT_VERSION" != "$INIT_VERSION" ]; then
+            echo "::error::Version mismatch: pyproject.toml=$PYPROJECT_VERSION vs canvas_local_mcp/__init__.py __version__=$INIT_VERSION"
+            FAIL=1
+          fi
+
+          # When triggered by a tag push, verify the tag matches the declared version.
+          # GITHUB_REF for a tag push is refs/tags/vX.Y.Z; stripping the prefix gives X.Y.Z.
+          if [ -n "$GITHUB_REF" ] && echo "$GITHUB_REF" | grep -q '^refs/tags/v'; then
+            TAG_VERSION="${GITHUB_REF#refs/tags/v}"
+            echo "Git tag version              : $TAG_VERSION"
+            if [ "$TAG_VERSION" != "$PYPROJECT_VERSION" ]; then
+              echo "::error::Tag mismatch: tag=v$TAG_VERSION does not match pyproject.toml version=$PYPROJECT_VERSION. Bump the version in pyproject.toml, server.json, and canvas_local_mcp/__init__.py before tagging."
+              FAIL=1
+            fi
+          fi
+
+          if [ "$FAIL" -ne 0 ]; then
+            exit 1
+          fi
+          echo "All version checks passed."
+
       - name: Install mcp-publisher
         run: |
           curl -sL https://github.com/modelcontextprotocol/registry/releases/download/v1.7.9/mcp-publisher_linux_amd64.tar.gz | tar xz
@@ -39,3 +110,4 @@ jobs:
               exit "$exit_code"
             fi
           fi
+
