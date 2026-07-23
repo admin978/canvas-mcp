@@ -62,6 +62,8 @@ chmod 600 ~/.canvas.env
 # and paste the token into CANVAS_TOKEN
 ```
 
+For token safety guidance (least privilege, file permissions, rotation/revocation, and vulnerability reporting), see [SECURITY.md](SECURITY.md).
+
 ### 4) Register in your MCP client
 
 Claude Code:
@@ -116,6 +118,22 @@ Output goes to `./canvas-dump/` by default. Override with `CANVAS_DUMP_DIR=/path
 - Configuration is read from `~/.canvas.env` (`CANVAS_BASE_URL`, `CANVAS_TOKEN`).
 - Requests go from your local server to the official Canvas API endpoints.
 - No external token broker is used in the request path.
+- Security guidance and disclosure policy: [SECURITY.md](SECURITY.md).
+
+## Demo
+
+No demo GIF is currently committed yet. You can still verify the workflow quickly:
+
+### Try these prompts
+
+After registering the MCP server, ask Claude:
+
+- “List my active Canvas courses.”
+- “What assignments are due this week across all my active courses?”
+- “Show upcoming events and planner items for next week.”
+- “List my current grades by course.”
+
+> Placeholder: add a short terminal/GIF walkthrough here in a future PR.
 
 ## Development
 
@@ -135,7 +153,7 @@ CI runs lint + tests on Python 3.10–3.13 for every push and pull request.
 - Pull requests are welcome for bug fixes and Canvas workflow improvements
 - Roadmap direction currently lives in open issues and upcoming PRs
 
-If this project helps you manage Canvas with Claude, consider giving it a ⭐ so other students and educators can find it.
+If this project helps you manage Canvas with Claude, please try the flow above and consider giving it a ⭐ so other students and educators can find it.
 
 ## License
 
