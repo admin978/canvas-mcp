@@ -24,4 +24,15 @@ jobs:
         run: ./mcp-publisher login github-oidc
 
       - name: Publish
-        run: ./mcp-publisher publish
+        run: |
+          set +e
+          output=$(./mcp-publisher publish 2>&1)
+          exit_code=$?
+          echo "$output"
+          if [ $exit_code -ne 0 ]; then
+            if echo "$output" | grep -iq "duplicate version"; then
+              echo "::warning::Version already published - skipping."
+            else
+              exit $exit_code
+            fi
+          fi
