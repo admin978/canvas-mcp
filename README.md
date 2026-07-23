@@ -147,6 +147,52 @@ pytest                              # tests run against a mocked Canvas API — 
 
 CI runs lint + tests on Python 3.10–3.13 for every push and pull request.
 
+## Publishing a new release
+
+Follow this order to publish a new version (e.g. `0.1.4`) consistently across PyPI and the MCP Registry.
+
+### 1. Bump the version everywhere
+
+Update all three files to the new version string in a single PR:
+
+| File | Field |
+|---|---|
+| `pyproject.toml` | `[project].version` |
+| `canvas_local_mcp/__init__.py` | `__version__` |
+| `server.json` | root `version` **and** `packages[0].version` |
+
+The CI test `test_server_json_version_matches_package` and the workflow validation step will fail if any of these three disagree.
+
+### 2. Merge the PR into `main`
+
+Wait for all CI checks to pass before merging.
+
+### 3. Publish `canvas-local-mcp` to PyPI
+
+The project uses [Trusted Publisher (OIDC)](https://docs.pypi.org/trusted-publishers/) for PyPI uploads.
+Trigger the PyPI publish workflow (or run `python -m build && twine upload dist/*` if you have credentials configured) **before** creating the tag, so the package is available when the MCP Registry fetches it.
+
+### 4. Create and push the tag `vX.Y.Z`
+
+```bash
+git tag vX.Y.Z
+git push origin vX.Y.Z
+```
+
+This triggers the `Publish to MCP Registry` workflow, which:
+
+1. Validates that `server.json`, `pyproject.toml`, and the tag all declare the same version.
+2. Publishes `server.json` to the MCP Registry via GitHub OIDC (no secrets needed).
+
+### 5. Verify
+
+- PyPI: `https://pypi.org/project/canvas-local-mcp/`
+- MCP Registry: `https://registry.modelcontextprotocol.io/?q=canvas-mcp`
+- GitHub Actions: `https://github.com/admin978/canvas-mcp/actions`
+
+> **Important**: never reuse or move an existing tag. If you need to re-publish after a mistake,
+> bump to the next patch version (e.g. `0.1.4`) and start from step 1.
+
 ## Contributing, roadmap and support
 
 - [Issues / feature requests](https://github.com/admin978/canvas-mcp/issues)
