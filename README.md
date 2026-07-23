@@ -109,7 +109,7 @@ Output goes to `./canvas-dump/` by default. Override with `CANVAS_DUMP_DIR=/path
 - The server runs locally and uses **stdio** transport with your MCP client.
 - Configuration is read from `~/.canvas.env` (`CANVAS_BASE_URL`, `CANVAS_TOKEN`).
 - Requests go from your local server to the official Canvas API endpoints.
-- This repository does not document any external token broker in the request path.
+- No external token broker is used in the request path.
 
 ## Development
 
